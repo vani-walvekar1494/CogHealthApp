@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Cognitive Reflex Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #ff9ff3, #7ed6df); 
+            text-align: center; color: white; font-family: Arial, sans-serif;
+        }
+        #game-container {
+            width: 350px; height: 400px; background: white; 
+            margin: auto; border-radius: 10px; 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); 
+            position: relative; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .shape {
+            width: 80px; height: 80px; position: absolute;
+            cursor: pointer; transition: transform 0.2s ease-in-out;
+        }
+        .circle { border-radius: 50%; background: #feca57; }
+        .square { background: #ff4757; }
+        .triangle {
+            width: 0; height: 0; border-left: 40px solid transparent;
+            border-right: 40px solid transparent; border-bottom: 80px solid #1e90ff;
+        }
+        #instructions {
+            width: 60%; margin: 20px auto; padding: 10px;
+            background: rgba(255, 255, 255, 0.2); border-radius: 10px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cognitive Reflex Test</h2>
+    <div id="instructions">
+        <p><strong>How to Play:</strong></p>
+        <ul style="text-align: left;">
+            <li>Tap the shape before time runs out!</li>
+            <li>Speed increases slightly with each correct tap.</li>
+            <li>Game over if you miss a shape!</li>
+        </ul>
+    </div>
+    
+    <div id="game-container">
+        <div id="target-shape" class="shape"></div>
+    </div>
+
+    <p>Score: <span id="score">0</span></p>
+    <p>Reaction Time: <span id="reaction-time">0</span> ms</p>
+    <button class="btn btn-light" onclick="startGame()">Start Game</button>
+
+    
+
+    <script>
+        let gameContainer = document.getElementById("game-container");
+        let targetShape = document.getElementById("target-shape");
+        let scoreDisplay = document.getElementById("score");
+        let reactionTimeDisplay = document.getElementById("reaction-time");
+        let score = 0, startTime, speed = 1500, shapeTimeout;
+
+        function startGame() {
+            score = 0;
+            speed = 1500; // Reset speed
+            scoreDisplay.innerText = score;
+            reactionTimeDisplay.innerText = "0";
+            spawnShape();
+        }
+
+        function spawnShape() {
+            clearTimeout(shapeTimeout); // Clear previous timeout
+            let shapes = ["circle", "square", "triangle"];
+            let selectedShape = shapes[Math.floor(Math.random() * shapes.length)];
+            targetShape.className = "shape " + selectedShape;
+            targetShape.style.left = Math.random() * 250 + "px";
+            targetShape.style.top = Math.random() * 250 + "px";
+            startTime = new Date().getTime();
+
+            // Give time before game over
+            shapeTimeout = setTimeout(() => { 
+                alert("Too slow! Game Over. Final Score: " + score);
+                startTime = null;
+            }, speed + 500);
+        }
+
+        targetShape.addEventListener("click", () => {
+            if (!startTime) return;
+            let reactionTime = new Date().getTime() - startTime;
+            reactionTimeDisplay.innerText = reactionTime;
+            score++;
+            scoreDisplay.innerText = score;
+            speed = Math.max(speed * 0.95, 600); // Slowly decrease speed but not too much
+            spawnShape();
+        });
+    </script>
+</body>
+</html>

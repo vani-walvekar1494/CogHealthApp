@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystery Expedition</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">Mystery Expedition</h1>
+        <p class="fs-4">Score: <strong>{{ score }}</strong></p>
+        <p class="fs-5">Time Left: <span id="timer" class="fw-bold text-danger">{{ time_left }} seconds</span></p>
+
+        {% if answered_correctly %}
+            <div class="alert alert-success">Correct! Moving to the next puzzle.</div>
+        {% elif answered_correctly is not none %}
+            <div class="alert alert-danger">Wrong choice! The artifact remains locked.</div>
+        {% endif %}
+
+        {% if time_left > 0 %}
+            <h3 class="mt-4">{{ puzzle }}</h3>
+
+            <form method="POST" class="mt-3">
+                <div class="row justify-content-center">
+                    {% for option in options %}
+                        <div class="col-md-3 col-6 mb-2">
+                            <button type="submit" class="btn btn-primary w-100" name="answer" value="{{ option }}">{{ option }}</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-info mt-4">Time's up! Game Over.</div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="/" class="btn btn-outline-dark">Return to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = JSON.parse('{{ time_left | tojson | safe }}');
+        const timerElement = document.getElementById("timer");
+
+        const countdown = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerElement.textContent = `${timeLeft} seconds`;
+            } else {
+                clearInterval(countdown);
+                document.body.innerHTML += '<div class="container text-center mt-4"><div class="alert alert-info">Time is up! Redirecting...</div></div>';
+                setTimeout(() => {
+                    window.location.href = "/";  // Redirect to home
+                }, 2000);
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>

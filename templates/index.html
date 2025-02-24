@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>StressLess - Monitor Your Mind</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <style>
+        /* Background Animation */
+        body {
+            background: url('https://source.unsplash.com/1600x900/?galaxy,nebula') no-repeat center center/cover;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Dark overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(253, 208, 251, 0.7), rgba(0, 0, 0, 0.5));
+            z-index: -1;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+        }
+
+        /* Button Styles */
+        .btn-custom {
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 22px; /* Larger Font */
+            border-radius: 30px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(255, 118, 136, 0.4);
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 118, 136, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #3c8ce7, #00eaff);
+            border: none;
+            padding: 18px 40px;
+            font-size: 22px; /* Larger Font */
+            border-radius: 30px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 238, 255, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 238, 255, 0.6);
+        }
+
+        /* Animated Text */
+        h1 {
+            font-size: 3rem; /* Larger Font */
+            font-weight: bold;
+            background: -webkit-linear-gradient(135deg, #ff758c, #ff7eb3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        p {
+            font-size: 1.5rem; /* Larger Font */
+            opacity: 0.8;
+            animation: fadeIn 2.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        <h1>Monitor Your Mind</h1>
+        <p>Track stress and boost cognitive health efficiently.</p>
+
+        <!-- GIF Animation -->
+        <div class="mb-4">
+            <img src="{{ url_for('static', filename='giphy.gif') }}" alt="Stress Less Animation" style="width: 300px; height: auto;">
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-4">
+            <a href="/login" class="btn btn-custom">Sign in</a>
+            <a href="/register" class="btn btn-success">Create an account with your employee MailId</a>
+        </div>
+    </div>
+
+</body>
+</html>

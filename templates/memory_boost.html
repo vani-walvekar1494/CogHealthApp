@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Memory Boost</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
+            text-align: center; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 100px); 
+            gap: 10px; 
+            justify-content: center; 
+        }
+        .card {
+            width: 100px; 
+            height: 100px; 
+            background: white;
+            font-size: 24px; 
+            text-align: center; 
+            cursor: pointer;
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transform-style: preserve-3d; 
+            transition: transform 0.5s;
+            position: relative; 
+        }
+        .card.flip { transform: rotateY(180deg); }
+        .front, .back {
+            width: 100px; 
+            height: 100px; 
+            position: absolute; 
+            backface-visibility: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            top: 0; 
+            left: 0; 
+        }
+        .back { 
+            background: #ff7eb3; 
+            color: white; 
+            transform: rotateY(180deg); 
+        }
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .restart-btn:hover {
+            background: #d81b60;
+        }
+        .stats {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Memory Boost</h2>
+        <p class="stats" id="stats">Time: 0s | Clicks: 0</p>
+        <div class="grid" id="game-board"></div>
+        <button class="restart-btn" onclick="createBoard()">Restart Game</button>
+    </div>
+
+    <script>
+        const icons = ["🍎", "🍌", "🍒", "🍇", "🍉", "🍓", "🥝", "🍍",
+                       "🍎", "🍌", "🍒", "🍇", "🍉", "🍓", "🥝", "🍍"];
+        let flipped = [];
+        let matchedPairs = 0;
+        let lockBoard = false; 
+        let startTime, timerInterval, clicks = 0;
+
+        function shuffle(array) { 
+            return array.sort(() => Math.random() - 0.5); 
+        }
+
+        function createBoard() {
+            matchedPairs = 0;
+            flipped = [];
+            lockBoard = false;
+            clicks = 0;
+            document.getElementById("stats").textContent = "Time: 0s | Clicks: 0";
+
+            clearInterval(timerInterval);
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            const board = document.getElementById("game-board");
+            board.innerHTML = '';
+
+            shuffle(icons).forEach(icon => {
+                let card = document.createElement("div");
+                card.classList.add("card");
+
+                let front = document.createElement("div");
+                front.classList.add("front");
+                front.textContent = "❓";
+
+                let back = document.createElement("div");
+                back.classList.add("back");
+                back.textContent = icon;
+
+                card.appendChild(front);
+                card.appendChild(back);
+                card.onclick = () => flipCard(card);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (lockBoard || flipped.includes(card) || card.classList.contains("flip")) return;
+
+            card.classList.add("flip");
+            flipped.push(card);
+            clicks++;
+            updateTimer();
+
+            if (flipped.length === 2) {
+                lockBoard = true;
+                setTimeout(checkMatch, 600);
+            }
+        }
+
+        function checkMatch() {
+            let [card1, card2] = flipped;
+            let icon1 = card1.querySelector(".back").textContent;
+            let icon2 = card2.querySelector(".back").textContent;
+
+            if (icon1 === icon2) {
+                matchedPairs++;
+                flipped.forEach(card => card.onclick = null);
+                playSound("match");
+                if (matchedPairs === icons.length / 2) endGame();
+            } else {
+                flipped.forEach(card => card.classList.remove("flip"));
+                playSound("wrong");
+            }
+
+            flipped = [];
+            lockBoard = false;
+        }
+
+        function updateTimer() {
+            let elapsedTime = Math.floor((new Date() - startTime) / 1000);
+            document.getElementById("stats").textContent = `Time: ${elapsedTime}s | Clicks: ${clicks}`;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            let elapsedTime = Math.floor((new Date() - startTime) / 1000);
+            alert(`You won! 🎉 Time: ${elapsedTime}s | Clicks: ${clicks}`);
+            saveScore(100, elapsedTime, clicks);
+        }
+
+        function saveScore(score, time, clicks) {
+            fetch('/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game: 'memory', score: score, time: time, clicks: clicks })
+            });
+        }
+
+        function playSound(type) {
+            let audio = new Audio(type === "match" ? 
+                "https://www.fesliyanstudios.com/play-mp3/4387" : 
+                "https://www.fesliyanstudios.com/play-mp3/4385");
+            audio.play();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
