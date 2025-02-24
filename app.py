@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
 
-# MySQL Configuration with SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Legend123@localhost/stressless_db'
+# Replace with a secure key for production
+app.secret_key = secrets.token_hex(16)  # Use a secure secret key here
+
+# SQLite Configuration with SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stressless.db'  # SQLite URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
